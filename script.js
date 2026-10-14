@@ -16,7 +16,33 @@ function trackVisit(){// Approximate browser count only; not a cross-device or s
 }
 function setupUI(){$('#musicBtn').addEventListener('click',async()=>{const a=$('#bgMusic');if(!a.src)return;if(audioOn){a.pause();audioOn=false;$('#musicBtn').innerHTML='♫ <span>Play music</span>'}else{try{await a.play();audioOn=true;$('#musicBtn').innerHTML='♫ <span>Pause music</span>'}catch(e){$('#rsvpStatus').textContent='Music could not play. Check the music URL.'}}});
 $$('.team-card').forEach(b=>b.addEventListener('click',()=>{$$('.team-card').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');$('#teamMessage').textContent=`You're on Team ${b.dataset.team}! Let the friendly rivalry begin.`}));
-$('#rsvpForm').addEventListener('submit',e=>{e.preventDefault();const f=new FormData(e.target);const record={name:f.get('name'),attendance:f.get('attendance'),guests:f.get('guests'),events:f.getAll('events'),note:f.get('note'),submittedAt:new Date().toISOString()};let list=JSON.parse(localStorage.getItem(RSVP_KEY)||'[]');list.push(record);localStorage.setItem(RSVP_KEY,JSON.stringify(list));const msg=`Wedding RSVP — ${cfg.bride} & ${cfg.groom}%0AName: ${encodeURIComponent(record.name)}%0AResponse: ${encodeURIComponent(record.attendance)}%0ANumber of guests: ${encodeURIComponent(record.guests)}%0AEvents: ${encodeURIComponent(record.events.join(', ')||'Not selected')}%0ANote: ${encodeURIComponent(record.note||'—')}`;$('#rsvpStatus').textContent='Your RSVP has been prepared. WhatsApp will open; please press Send to deliver it.';if(cfg.whatsapp&&cfg.whatsapp.replace(/\D/g,'').length>=8)window.open(`https://wa.me/${cfg.whatsapp.replace(/\D/g,'')}?text=${msg}`,'_blank','noopener');else $('#rsvpStatus').textContent='Creator has not configured a WhatsApp number. Your response is saved only in this browser; use the creator export to download it.';});
+const attendanceSelect=$('#rsvpForm select[name="attendance"]');
+const guestCount=$('#rsvpForm input[name="guests"]');
+function updateGuestCount(){
+  const declining=attendanceSelect.value==='Regretfully declines';
+  guestCount.min=declining?'0':'1';
+  if(declining){guestCount.value='0';guestCount.setCustomValidity('');}
+  else if(attendanceSelect.value==='Joyfully accepts'){
+    if(guestCount.value===''||Number(guestCount.value)<1)guestCount.value='1';
+    guestCount.setCustomValidity('');
+  } else {
+    guestCount.value='1';
+    guestCount.setCustomValidity('');
+  }
+}
+attendanceSelect.addEventListener('change',updateGuestCount);
+guestCount.addEventListener('input',()=>{
+  const count=Number(guestCount.value);
+  const declining=attendanceSelect.value==='Regretfully declines';
+  if(guestCount.value===''||!Number.isFinite(count)||count<0||count>20||!Number.isInteger(count)||(!declining&&attendanceSelect.value==='Joyfully accepts'&&count<1)||(declining&&count!==0)){
+    guestCount.setCustomValidity(declining?'If you decline, the number of guests must be 0.':'If you accept, enter a whole number from 1 to 20.');
+  } else guestCount.setCustomValidity('');
+});
+$('#rsvpForm').addEventListener('submit',e=>{e.preventDefault();
+const attendance=attendanceSelect.value, count=Number(guestCount.value);
+if(!attendance){attendanceSelect.reportValidity();return;}
+if((attendance==='Regretfully declines'&&count!==0)||(attendance==='Joyfully accepts'&&(!Number.isInteger(count)||count<1||count>20))){guestCount.setCustomValidity(attendance==='Regretfully declines'?'If you decline, the number of guests must be 0.':'If you accept, enter a whole number from 1 to 20.');guestCount.reportValidity();return;}
+guestCount.setCustomValidity('');const f=new FormData(e.target);const record={name:f.get('name'),attendance:f.get('attendance'),guests:f.get('guests'),events:f.getAll('events'),note:f.get('note'),submittedAt:new Date().toISOString()};let list=JSON.parse(localStorage.getItem(RSVP_KEY)||'[]');list.push(record);localStorage.setItem(RSVP_KEY,JSON.stringify(list));const msg=`Wedding RSVP — ${cfg.bride} & ${cfg.groom}%0AName: ${encodeURIComponent(record.name)}%0AResponse: ${encodeURIComponent(record.attendance)}%0ANumber of guests: ${encodeURIComponent(record.guests)}%0AEvents: ${encodeURIComponent(record.events.join(', ')||'Not selected')}%0ANote: ${encodeURIComponent(record.note||'—')}`;$('#rsvpStatus').textContent='Your RSVP has been prepared. WhatsApp will open; please press Send to deliver it.';if(cfg.whatsapp&&cfg.whatsapp.replace(/\D/g,'').length>=8)window.open(`https://wa.me/${cfg.whatsapp.replace(/\D/g,'')}?text=${msg}`,'_blank','noopener');else $('#rsvpStatus').textContent='Creator has not configured a WhatsApp number. Your response is saved only in this browser; use the creator export to download it.';});
 $('#creatorTrigger').addEventListener('click',()=>{const now=Date.now();taps=taps.filter(t=>now-t<1800);taps.push(now);if(taps.length>=3){$('#creatorModal').classList.remove('hidden');taps=[];if(unlocked)showEditor();}});$('#closeCreator').addEventListener('click',()=>$('#creatorModal').classList.add('hidden'));$('#creatorModal').addEventListener('click',e=>{if(e.target.id==='creatorModal')$('#creatorModal').classList.add('hidden')});
 $('#unlockCreator').addEventListener('click',()=>{if($('#creatorPin').value==='2468'){unlocked=true;$('#pinArea').classList.add('hidden');showEditor()}else $('#pinError').textContent='Incorrect demo PIN.'});
 $$('.tab').forEach(b=>b.addEventListener('click',()=>{ $$('.tab').forEach(x=>x.classList.toggle('active',x===b));$$('.editor-page').forEach(p=>p.classList.toggle('hidden',p.dataset.page!==b.dataset.tab));if(b.dataset.tab==='records')renderStats()}));

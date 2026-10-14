@@ -47,3 +47,9 @@ Place an audio file you have permission to use in the repository (for example `a
 - `robots` noindex is only a request to search engines, not access control.
 - Do not commit secrets, private phone numbers, or private guest records into a public repository.
 - Keep backups of your exported RSVP CSV and config.
+
+
+### RSVP guest-count validation
+- Declining automatically sets the guest count to 0.
+- Accepting requires a whole-number guest count from 1 to 20.
+- This is client-side validation; static GitHub Pages still does not collect responses centrally.

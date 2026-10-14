@@ -38,7 +38,7 @@
 <form id="rsvpForm" class="rsvp-form">
 <label>Your name<input name="name" required maxlength="100" placeholder="Enter your full name"></label>
 <label>Will you be joining us?<select name="attendance" required><option value="">Choose your response</option><option value="Joyfully accepts">Joyfully accepts</option><option value="Regretfully declines">Regretfully declines</option></select></label>
-<label>Number of guests (including you)<input name="guests" type="number" min="1" max="20" value="1" required></label>
+<label>Number of guests (including you)<input name="guests" type="number" min="0" max="20" value="1" required></label>
 <fieldset><legend>Which celebrations will you attend?</legend><div id="rsvpEvents" class="rsvp-events"></div></fieldset>
 <label>A note for the couple (optional)<textarea name="note" rows="3" maxlength="500" placeholder="Write a little message…"></textarea></label>
 <button class="button button-dark" type="submit">Send RSVP via WhatsApp <span>↗</span></button>
