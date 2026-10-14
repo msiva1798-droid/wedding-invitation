@@ -10,16 +10,22 @@ function applyConfig(){document.documentElement.style.setProperty('--gold',cfg.a
 $('#envelopeIntro').classList.toggle('hidden',cfg.envelopeEnabled===false);
 document.body.classList.toggle('envelope-locked',cfg.envelopeEnabled!==false&&!sessionStorage.getItem('weddingEnvelopeOpened'));
 }
+function effectiveRevealMethod(event){
+ const requested=event.revealMethod||'scratch';
+ const enabled={scratch:cfg.scratchEnabled!==false,heart:cfg.heartEnabled!==false,dhol:cfg.dholEnabled!==false};
+ if(enabled[requested])return requested;
+ return ['scratch','heart','dhol'].find(method=>enabled[method])||'none';
+}
 function renderEvents(){
 const events=(cfg.events||[]).filter(e=>e.enabled);
 $('#eventGrid').innerHTML=events.map((e,i)=>{
- const method=e.revealMethod||'scratch';
- const cardArt=method==='heart'?'♥':method==='dhol'?'🥁':'✧';
- const methodLabel=method==='heart'?'TRACE THE HEART':method==='dhol'?'TAP THE DHOL 5 TIMES':'RUB TO REVEAL';
+ const method=effectiveRevealMethod(e);
+ const cardArt=method==='heart'?'♥':method==='dhol'?'🥁':method==='none'?'×':'✧';
+ const methodLabel=method==='heart'?'TRACE THE HEART':method==='dhol'?'TAP THE DHOL 5 TIMES':method==='none'?'REVEAL INTERACTIONS OFF':'RUB TO REVEAL';
  const dressVisible=(e.dressCodeEnabled===undefined?!!e.dressCode:e.dressCodeEnabled)&&!!e.dressCode;
  return `<article class="event-card event-row" data-event-index="${i}">
- <div class="event-info"><span class="event-date">${esc(fmtDate(e.date,{day:'numeric',month:'short',year:'numeric'}))} · ${esc(timeFmt(e.start))}${e.end?' – '+esc(timeFmt(e.end)):''}</span><h3>${esc(e.name)}</h3><p>${esc(e.description||'Join us for this special celebration.')}</p><p class="event-venue">${esc(e.venue||cfg.venue)}</p>${dressVisible?`<p class="event-dress-code">Dress code: ${esc(e.dressCode)}</p>`:''}<p><a target="_blank" rel="noopener" href="${mapUrl(e.venue||cfg.venue)}">GET DIRECTIONS ↗</a> <a href="${calendarUrl(e)}" target="_blank" rel="noopener">ADD TO CALENDAR ↗</a></p></div>
- <button type="button" class="event-scratch-trigger ${method==='heart'?'method-heart':''} ${method==='dhol'?'method-dhol':''}" data-scratch="${i}" aria-label="Open ${esc(e.name)} reveal"><span class="mini-card-art">${cardArt}</span><small>${methodLabel}</small></button>
+ <div class="event-info"><h3>${esc(e.name)}</h3><p class="event-teaser">Tap to discover the date, time and celebration details.</p></div>
+ <button type="button" class="event-scratch-trigger ${method==='heart'?'method-heart':''} ${method==='dhol'?'method-dhol':''}"  ${method==='none'?'disabled':'data-scratch="'+i+'"'} aria-label="Open ${esc(e.name)} reveal"><span class="mini-card-art">${cardArt}</span><small>${methodLabel}</small></button>
  <div class="event-reveal-overlay hidden" data-reveal-overlay="${i}" role="dialog" aria-modal="true" aria-label="${esc(e.name)} reveal"><button type="button" class="reveal-close" data-close-reveal="${i}" aria-label="Close">×</button><div class="reveal-card ${method==='heart'?'heart-scratch':method==='dhol'?'dhol-scratch':'full-scratch'}" data-method="${method}"><div class="reveal-content"><span class="eyebrow">${esc(cfg.bride)} & ${esc(cfg.groom)}</span><h3>${esc(e.name)}</h3><p>${esc(fmtDate(e.date,{day:'numeric',month:'long',year:'numeric'}))} · ${esc(timeFmt(e.start))}${e.end?' – '+esc(timeFmt(e.end)):''}</p><p>${esc(e.description||'Join us for this special celebration.')}</p><p>${esc(e.venue||cfg.venue)}</p>${dressVisible?`<p>Dress code: ${esc(e.dressCode)}</p>`:''}<p><a target="_blank" rel="noopener" href="${mapUrl(e.venue||cfg.venue)}">GET DIRECTIONS ↗</a> <a href="${calendarUrl(e)}" target="_blank" rel="noopener">ADD TO CALENDAR ↗</a></p></div><button type="button" class="reveal-action ${method==='dhol'?'dhol-tap-target':''}" data-reveal-action="${i}">${method==='heart'?'TRACE THE HEART':method==='dhol'?'<span class="dhol-illustration" aria-hidden="true"><span class="dhol-stick dhol-stick-left"></span><span class="dhol-stick dhol-stick-right"></span><span class="dhol-shell"><span class="dhol-rim dhol-rim-left"></span><span class="dhol-rim dhol-rim-right"></span><span class="dhol-band"></span></span></span><span class="dhol-tap-label">TAP THE DHOL 5 TIMES</span>':'RUB OR SWIPE TO REVEAL'}</button><span class="reveal-progress" data-reveal-progress="${i}">${method==='dhol'?'0 / 5 taps':'Rub or swipe over the card'}</span></div></div>
  </article>`;
 }).join('');

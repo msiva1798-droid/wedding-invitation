@@ -86,3 +86,50 @@ body.reveal-open{overflow:hidden}
 .dhol-stick-left{left:30px;transform:rotate(-42deg)}.dhol-stick-right{right:28px;transform:rotate(43deg)}
 .dhol-tap-label{font-size:10px;line-height:1.5;text-align:center}
 .dhol-scratch .reveal-action.dhol-tap-target:focus-visible{outline:2px solid #f7d87c;outline-offset:4px;border-radius:14px}
+
+
+/* Cleaner event cards: keep details hidden until the guest reveals them */
+.event-row{grid-template-columns:minmax(0,1fr);gap:18px;align-items:stretch;padding:24px;text-align:left}
+.event-info{width:100%}
+.event-info h3{font-size:clamp(30px,4vw,42px);margin:10px 0 4px}
+.event-info .event-teaser{font:italic 17px/1.4 var(--serif);color:var(--muted);margin:4px 0 0}
+.event-scratch-trigger{width:100%;min-height:245px;margin:0;border-radius:18px;padding:22px 14px;gap:16px;box-shadow:0 12px 30px #7e541b20}
+.event-scratch-trigger .mini-card-art{font-size:76px}
+.event-scratch-trigger small{font-size:11px;letter-spacing:.14em}
+.event-scratch-trigger.method-heart{background:linear-gradient(135deg,#fff0ed 0%,#eab8b9 52%,#fff8ee 100%);border:3px solid #c88a8a;color:#59341f}
+.event-scratch-trigger.method-dhol{background:linear-gradient(135deg,#7f1826,#c63a35 58%,#f0b448);border:3px solid #f0bd50}
+@media(min-width:700px){.event-row{padding:28px}.event-scratch-trigger{min-height:280px}}
+@media(max-width:650px){.event-row{grid-template-columns:minmax(0,1fr);gap:16px;padding:20px 16px}.event-scratch-trigger{min-height:220px}.event-scratch-trigger .mini-card-art{font-size:68px}}
+
+/* Improve contrast for the revealed invitation: bright, warm interior with readable text. */
+.reveal-card.is-revealed.dhol-scratch,
+.reveal-card.dhol-scratch.is-revealed {
+  background: linear-gradient(145deg, #fff8df 0%, #ffe4b8 34%, #ffc8a8 68%, #fff1d4 100%);
+  color: #38251f;
+  border-color: #f4d36e;
+}
+.reveal-card.is-revealed.dhol-scratch:before,
+.reveal-card.dhol-scratch.is-revealed:before {
+  border-color: #b77a35;
+}
+.reveal-card.is-revealed.dhol-scratch .reveal-content,
+.reveal-card.dhol-scratch.is-revealed .reveal-content,
+.reveal-card.is-revealed.dhol-scratch .reveal-content p,
+.reveal-card.dhol-scratch.is-revealed .reveal-content p {
+  color: #493027;
+  opacity: 1;
+  filter: none;
+}
+.reveal-card.is-revealed.dhol-scratch .reveal-content h3,
+.reveal-card.dhol-scratch.is-revealed .reveal-content h3 {
+  color: #8b2637;
+}
+.reveal-card.is-revealed.dhol-scratch .reveal-content a,
+.reveal-card.dhol-scratch.is-revealed .reveal-content a {
+  color: #7b2a32;
+  border-color: #b77a35;
+}
+.reveal-card.is-revealed.dhol-scratch .reveal-progress,
+.reveal-card.dhol-scratch.is-revealed .reveal-progress {
+  color: #79502a;
+}
