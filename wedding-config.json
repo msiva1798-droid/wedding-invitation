@@ -1,0 +1,71 @@
+{
+  "bride": "Ananya",
+  "groom": "Rohan",
+  "date": "2026-12-11",
+  "venue": "The Grand Palace, Chennai",
+  "introLine": "Together with our families",
+  "brideParents": "Mr. & Mrs. Sharma",
+  "groomParents": "Mr. & Mrs. Rao",
+  "familyMessage": "With the love and blessings of our families, we invite you to join us as we celebrate a new chapter filled with love, laughter, and a lifetime of togetherness.",
+  "hashtag": "#AnanyaWedsRohan",
+  "whatsapp": "919876543210",
+  "musicUrl": "",
+  "accent": "#a77c43",
+  "closing": "We can't wait to celebrate with you.",
+  "teamEnabled": true,
+  "countdownEnabled": true,
+  "petalsEnabled": true,
+  "events": [
+    {
+      "name": "Haldi",
+      "enabled": true,
+      "date": "2026-12-08",
+      "start": "10:00",
+      "end": "12:00",
+      "venue": "The Garden Courtyard, Chennai",
+      "description": "A morning of sunshine, turmeric and happy beginnings.",
+      "dressCode": "Yellow & ivory"
+    },
+    {
+      "name": "Mehndi",
+      "enabled": true,
+      "date": "2026-12-09",
+      "start": "16:00",
+      "end": "19:00",
+      "venue": "The Garden Courtyard, Chennai",
+      "description": "Henna, music and memories with our favourite people.",
+      "dressCode": "Festive colours"
+    },
+    {
+      "name": "Sangeet",
+      "enabled": false,
+      "date": "2026-12-10",
+      "start": "18:00",
+      "end": "22:00",
+      "venue": "The Grand Palace, Chennai",
+      "description": "An evening of music, dancing and celebration.",
+      "dressCode": "Festive formal"
+    },
+    {
+      "name": "Wedding Ceremony",
+      "enabled": true,
+      "date": "2026-12-11",
+      "start": "09:00",
+      "end": "11:30",
+      "venue": "The Grand Palace, Chennai",
+      "description": "Join us as we begin our forever.",
+      "dressCode": "Traditional attire"
+    },
+    {
+      "name": "Reception",
+      "enabled": true,
+      "date": "2026-12-11",
+      "start": "18:30",
+      "end": "21:30",
+      "venue": "The Grand Palace, Chennai",
+      "description": "Dinner, laughter and a celebration of love.",
+      "dressCode": "Formal"
+    }
+  ],
+  "rsvpEnabled": true
+}
