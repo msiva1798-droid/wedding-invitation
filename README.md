@@ -53,3 +53,14 @@ Place an audio file you have permission to use in the repository (for example `a
 - Declining automatically sets the guest count to 0.
 - Accepting requires a whole-number guest count from 1 to 20.
 - This is client-side validation; static GitHub Pages still does not collect responses centrally.
+
+
+## Interactive features
+- Golden envelope opening screen, configurable in Creator Tools.
+- Tap/rub event keepsake cards that reveal event details.
+- Heart-shaped reveal message.
+- Tap the dhol five times to play a celebratory beat. Add an optional MP3 URL in Creator Tools for a real dhol/melam sound.
+
+
+## Per-event reveal and dress code
+In Creator Tools → Events, choose each event's reveal method (full scratch, heart-shaped scratch, or dhol five-tap). Each event also has a “Show dress code for this event” checkbox. Publish the exported `wedding-config.json` to make those settings visible to all guests.
