@@ -10,6 +10,16 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div id="envelopeIntro" class="envelope-intro" role="dialog" aria-modal="true" aria-label="Open wedding invitation">
+  <button id="openEnvelope" class="gold-envelope" type="button" aria-label="Tap to open the wedding invitation">
+    <span class="envelope-topline">YOU ARE CORDIALLY INVITED</span>
+    <span class="envelope-monogram" id="envelopeMonogram">A & R</span>
+    <span class="envelope-names" id="envelopeNames">Ananya <i>&</i> Rohan</span>
+    <span class="envelope-date" id="envelopeDate">11 DECEMBER 2026</span>
+    <span class="envelope-seal">✦</span>
+    <span class="envelope-hint">TAP TO OPEN</span>
+  </button>
+</div>
 <div class="petals" aria-hidden="true"></div>
 <header class="topbar"><span class="monogram" id="monogram">A & R</span><button class="music-btn" id="musicBtn" aria-pressed="false">♫ <span>Play music</span></button></header>
 <main>
@@ -32,7 +42,16 @@
   <p class="body-copy" id="familyMessage">With the love and blessings of our families, we invite you to join us as we celebrate a new chapter filled with love, laughter, and a lifetime of togetherness.</p>
   <div class="family-grid"><div><span class="small-label">THE BRIDE'S FAMILY</span><h3 id="brideParents">Mr. & Mrs. Sharma</h3></div><div><span class="small-label">THE GROOM'S FAMILY</span><h3 id="groomParents">Mr. & Mrs. Rao</h3></div></div>
 </section>
-<section class="section events-section" id="celebrations"><p class="eyebrow">SAVE THE DATES</p><h2>Our <em>celebrations</em></h2><p class="section-intro">Every moment is more beautiful with you by our side.</p><div class="event-grid" id="eventGrid"></div></section>
+<section class="section events-section" id="celebrations"><p class="eyebrow">SAVE THE DATES</p><h2>Our <em>celebrations</em></h2><p class="section-intro">Tap a keepsake, then gently swipe or rub to reveal each celebration.</p><div class="event-grid" id="eventGrid"></div></section>
+<section class="interactive-keepsakes section" id="keepsakes">
+  <p class="eyebrow">A LITTLE SURPRISE</p><h2>Made with <em>love</em></h2>
+  <button id="heartReveal" class="heart-reveal" type="button" aria-expanded="false"><span>♥</span><small>Tap the heart</small></button>
+  <p id="heartMessage" class="heart-message hidden">Our hearts are full because you'll be part of our special day.</p>
+  <div id="dholFeature" class="dhol-feature">
+    <button id="dholButton" class="dhol-button" type="button" aria-label="Tap the dhol five times"><span class="dhol-emoji">🥁</span><strong>Tap the dhol 5 times!</strong><span id="dholProgress">0 / 5 taps</span></button>
+    <p id="dholMessage" class="form-note">A little wedding melam surprise awaits.</p>
+  </div>
+</section>
 <section class="team-section section"><p class="eyebrow">A LITTLE FRIENDLY COMPETITION</p><h2>Which side are <em>you on?</em></h2><p class="section-intro">Pick your team and let the celebrations begin.</p><div class="team-grid"><button class="team-card bride-team" data-team="Bride"><span class="team-flower">✿</span><span class="small-label">TEAM</span><strong>BRIDE</strong><span class="team-note">Grace, glam & gorgeous vibes</span></button><button class="team-card groom-team" data-team="Groom"><span class="team-flower">❋</span><span class="small-label">TEAM</span><strong>GROOM</strong><span class="team-note">Charm, cheer & celebration</span></button></div><p id="teamMessage" class="team-message" aria-live="polite"></p></section>
 <section class="rsvp-section section" id="rsvp"><p class="eyebrow">KINDLY REPLY</p><h2>Will you join <em>our celebration?</em></h2><p class="section-intro">Your presence would mean the world to us.</p>
 <form id="rsvpForm" class="rsvp-form">
@@ -57,7 +76,13 @@
 <label>Bride's name<input id="cfgBride"></label><label>Groom's name<input id="cfgGroom"></label><label>Wedding date<input id="cfgDate" type="date"></label><label>Venue<input id="cfgVenue"></label><label>Bride's parents<input id="cfgBrideParents"></label><label>Groom's parents<input id="cfgGroomParents"></label><label>Family message<textarea id="cfgMessage" rows="3"></textarea></label><label>Wedding hashtag<input id="cfgHashtag"></label><label>WhatsApp number (country code, digits only)<input id="cfgWhatsapp" placeholder="919876543210"></label><label>Background music URL (optional)<input id="cfgMusic" placeholder="assets/music.mp3"></label>
 </div>
 <div class="editor-page hidden" data-page="events"><p class="form-note">Toggle events on/off. Disabled events are hidden from guests.</p><div id="eventEditor"></div><button class="button button-outline" id="addEvent">+ Add event</button></div>
-<div class="editor-page hidden" data-page="style"><label>Accent colour<input id="cfgAccent" type="color" value="#a77c43"></label><label>Intro line<input id="cfgIntro"></label><label>Closing message<input id="cfgClosing"></label><label>Team selection section<input id="cfgTeamEnabled" type="checkbox"></label><label>Countdown section<input id="cfgCountdownEnabled" type="checkbox"></label><label>Petal animation<input id="cfgPetalsEnabled" type="checkbox"></label><label>Show RSVP section to guests<input id="cfgRsvpEnabled" type="checkbox"></label></div>
+<div class="editor-page hidden" data-page="style"><label>Accent colour<input id="cfgAccent" type="color" value="#a77c43"></label><label>Intro line<input id="cfgIntro"></label><label>Closing message<input id="cfgClosing"></label><label>Team selection section<input id="cfgTeamEnabled" type="checkbox"></label><label>Countdown section<input id="cfgCountdownEnabled" type="checkbox"></label><label>Petal animation<input id="cfgPetalsEnabled" type="checkbox"></label><label>Show RSVP section to guests<input id="cfgRsvpEnabled" type="checkbox"></label>
+<label>Golden envelope intro<input id="cfgEnvelopeEnabled" type="checkbox"></label>
+<label>Scratch-to-reveal event cards<input id="cfgScratchEnabled" type="checkbox"></label>
+<label>Heart reveal interaction<input id="cfgHeartEnabled" type="checkbox"></label>
+<label>Dhol 5-tap interaction<input id="cfgDholEnabled" type="checkbox"></label>
+<label>Dhol sound URL (optional)<input id="cfgDholSound" placeholder="assets/dhol.mp3"></label>
+</div>
 <div class="editor-page hidden" data-page="records"><p class="form-note">Only records captured in this browser are available here. WhatsApp replies are not automatically imported.</p><div id="localStats"></div><button class="button button-outline" id="exportRsvps">Export local RSVP records (CSV)</button><button class="button button-outline" id="exportConfig">Download wedding-config.json</button><label class="file-label">Load a config file<input id="importConfig" type="file" accept="application/json"></label><button class="button button-outline danger" id="resetLocal">Reset local visitor count & records</button></div>
 <div class="editor-actions"><button class="button button-dark" id="saveConfig">Save in this browser</button><p class="form-note">For GitHub Pages, download the config and replace wedding-config.json in your repository to publish changes for everyone.</p></div>
 </div></div></div>
