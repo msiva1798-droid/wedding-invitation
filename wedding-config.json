@@ -15,7 +15,7 @@
   "teamEnabled": true,
   "countdownEnabled": true,
   "petalsEnabled": true,
-  "rsvpEnabled": true,
+  "rsvpEnabled": false,
   "envelopeEnabled": true,
   "scratchEnabled": true,
   "heartEnabled": true,
@@ -67,7 +67,7 @@
       "venue": "M Mallika Mahal, Pudur",
       "description": "Join us as we begin our forever.",
       "dressCode": "Traditional attire",
-      "revealMethod": "dhol",
+      "revealMethod": "scratch",
       "dressCodeEnabled": false
     },
     {
