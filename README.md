@@ -64,3 +64,10 @@ Place an audio file you have permission to use in the repository (for example `a
 
 ## Per-event reveal and dress code
 In Creator Tools → Events, choose each event's reveal method (full scratch, heart-shaped scratch, or dhol five-tap). Each event also has a “Show dress code for this event” checkbox. Publish the exported `wedding-config.json` to make those settings visible to all guests.
+
+
+### Reveal interactions
+- Event preview cards say “TOUCH TO REVEAL” (heart events say “TOUCH THE HEART”).
+- Full scratch mode has no button: scratch/swipe the card itself; the only overlay instruction is “SCRATCH THE CARD TO REVEAL”.
+- Heart mode has no button: trace the large heart itself; “TRACE THE HEART” appears inside it and “Rub or scratch over the heart” remains below.
+- Dhol mode retains its tappable illustration and five-tap reveal.

@@ -21,98 +21,34 @@ const events=(cfg.events||[]).filter(e=>e.enabled);
 $('#eventGrid').innerHTML=events.map((e,i)=>{
  const method=effectiveRevealMethod(e);
  const cardArt=method==='heart'?'♥':method==='dhol'?'🥁':method==='none'?'×':'✧';
- const methodLabel=method==='heart'?'TRACE THE HEART':method==='dhol'?'TAP THE DHOL 5 TIMES':method==='none'?'REVEAL INTERACTIONS OFF':'RUB TO REVEAL';
+ const methodLabel=method==='heart'?'TOUCH THE HEART':method==='dhol'?'TAP THE DHOL 5 TIMES':method==='none'?'REVEAL INTERACTIONS OFF':'TOUCH TO REVEAL';
  const dressVisible=(e.dressCodeEnabled===undefined?!!e.dressCode:e.dressCodeEnabled)&&!!e.dressCode;
  return `<article class="event-card event-row" data-event-index="${i}">
  <div class="event-info"><h3>${esc(e.name)}</h3><p class="event-teaser">Tap to discover the date, time and celebration details.</p></div>
  <button type="button" class="event-scratch-trigger ${method==='heart'?'method-heart':''} ${method==='dhol'?'method-dhol':''}"  ${method==='none'?'disabled':'data-scratch="'+i+'"'} aria-label="Open ${esc(e.name)} reveal"><span class="mini-card-art">${cardArt}</span><small>${methodLabel}</small></button>
- <div class="event-reveal-overlay hidden" data-reveal-overlay="${i}" role="dialog" aria-modal="true" aria-label="${esc(e.name)} reveal"><button type="button" class="reveal-close" data-close-reveal="${i}" aria-label="Close">×</button><div class="reveal-card ${method==='heart'?'heart-scratch':method==='dhol'?'dhol-scratch':'full-scratch'}" data-method="${method}"><div class="reveal-content"><span class="eyebrow">${esc(cfg.bride)} & ${esc(cfg.groom)}</span><h3>${esc(e.name)}</h3><p>${esc(fmtDate(e.date,{day:'numeric',month:'long',year:'numeric'}))} · ${esc(timeFmt(e.start))}${e.end?' – '+esc(timeFmt(e.end)):''}</p><p>${esc(e.description||'Join us for this special celebration.')}</p><p>${esc(e.venue||cfg.venue)}</p>${dressVisible?`<p>Dress code: ${esc(e.dressCode)}</p>`:''}<p><a target="_blank" rel="noopener" href="${mapUrl(e.venue||cfg.venue)}">GET DIRECTIONS ↗</a> <a href="${calendarUrl(e)}" target="_blank" rel="noopener">ADD TO CALENDAR ↗</a></p></div><button type="button" class="reveal-action ${method==='dhol'?'dhol-tap-target':''}" data-reveal-action="${i}">${method==='heart'?'TRACE THE HEART':method==='dhol'?'<span class="dhol-illustration" aria-hidden="true"><span class="dhol-stick dhol-stick-left"></span><span class="dhol-stick dhol-stick-right"></span><span class="dhol-shell"><span class="dhol-rim dhol-rim-left"></span><span class="dhol-rim dhol-rim-right"></span><span class="dhol-band"></span></span></span><span class="dhol-tap-label">TAP THE DHOL 5 TIMES</span>':'RUB OR SWIPE TO REVEAL'}</button><span class="reveal-progress" data-reveal-progress="${i}">${method==='dhol'?'0 / 5 taps':'Rub or swipe over the card'}</span></div></div>
+ <div class="event-reveal-overlay hidden" data-reveal-overlay="${i}" role="dialog" aria-modal="true" aria-label="${esc(e.name)} reveal"><button type="button" class="reveal-close" data-close-reveal="${i}" aria-label="Close">×</button><div class="reveal-card ${method==='heart'?'heart-scratch':method==='dhol'?'dhol-scratch':'full-scratch'}" data-method="${method}"><div class="reveal-content"><span class="eyebrow">${esc(cfg.bride)} & ${esc(cfg.groom)}</span><h3>${esc(e.name)}</h3><p>${esc(fmtDate(e.date,{day:'numeric',month:'long',year:'numeric'}))} · ${esc(timeFmt(e.start))}${e.end?' – '+esc(timeFmt(e.end)):''}</p><p>${esc(e.description||'Join us for this special celebration.')}</p><p>${esc(e.venue||cfg.venue)}</p>${dressVisible?`<p>Dress code: ${esc(e.dressCode)}</p>`:''}<p><a target="_blank" rel="noopener" href="${mapUrl(e.venue||cfg.venue)}">GET DIRECTIONS ↗</a> <a href="${calendarUrl(e)}" target="_blank" rel="noopener">ADD TO CALENDAR ↗</a></p></div>${method==='dhol'?`<button type="button" class="reveal-action dhol-tap-target" data-reveal-action="${i}"><span class="dhol-illustration" aria-hidden="true"><span class="dhol-stick dhol-stick-left"></span><span class="dhol-stick dhol-stick-right"></span><span class="dhol-shell"><span class="dhol-rim dhol-rim-left"></span><span class="dhol-rim dhol-rim-right"></span><span class="dhol-band"></span></span></span><span class="dhol-tap-label">TAP THE DHOL 5 TIMES</span></button><span class="reveal-progress" data-reveal-progress="${i}">0 / 5 taps</span>`:method==='heart'?`<div class="gesture-prompt heart-prompt" aria-hidden="true"><span>TRACE THE HEART</span></div><p class="gesture-help">Rub or scratch over the heart</p>`:`<div class="gesture-prompt scratch-prompt">SCRATCH THE CARD TO REVEAL</div>`}</div></div>
  </article>`;
 }).join('');
 $('#rsvpEvents').innerHTML=events.map(e=>`<label><input type="checkbox" name="events" value="${esc(e.name)}"> ${esc(e.name)}</label>`).join('')||'<p class="form-note">No events are currently enabled.</p>';
 $$('[data-scratch]').forEach(btn=>{
  const idx=Number(btn.dataset.scratch), overlay=$(`[data-reveal-overlay="${idx}"]`), panel=overlay.querySelector('.reveal-card'), action=overlay.querySelector('[data-reveal-action]'), progress=overlay.querySelector('[data-reveal-progress]');
- const event=events[idx], method=event.revealMethod||'scratch'; let taps=0, revealed=false, startX=0,startY=0,moved=0;
+ const event=events[idx], method=effectiveRevealMethod(event); let taps=0, revealed=false, startX=0,startY=0,moved=0,scratching=false;
  const content=panel.querySelector('.reveal-content');
- const resetReveal=()=>{
-   taps=0;revealed=false;scratching=false;moved=0;
-   panel.classList.remove('is-revealed','heart-tracing','drum-hit');
-   panel.style.removeProperty('--scratch-progress');
-   panel.querySelectorAll('.reveal-content').forEach(node=>{
-     node.classList.remove('is-revealed');
-     node.style.removeProperty('filter');
-     node.style.removeProperty('opacity');
-     node.style.removeProperty('clip-path');
-     node.style.removeProperty('-webkit-clip-path');
-     node.style.removeProperty('visibility');
-   });
-   action.disabled=false;
-   if(method==='dhol'){action.innerHTML='<span class="dhol-illustration" aria-hidden="true"><span class="dhol-stick dhol-stick-left"></span><span class="dhol-stick dhol-stick-right"></span><span class="dhol-shell"><span class="dhol-rim dhol-rim-left"></span><span class="dhol-rim dhol-rim-right"></span><span class="dhol-band"></span></span></span><span class="dhol-tap-label">TAP THE DHOL 5 TIMES</span>';}else{action.textContent=method==='heart'?'TRACE THE HEART':'RUB OR SWIPE TO REVEAL';}
-   progress.textContent=method==='dhol'?'0 / 5 taps':'Rub or swipe over the card';
- };
+ const resetReveal=()=>{taps=0;revealed=false;scratching=false;moved=0;panel.classList.remove('is-revealed','heart-tracing','drum-hit');panel.style.removeProperty('--scratch-progress');if(content){content.classList.remove('is-revealed');['filter','opacity','clip-path','-webkit-clip-path','visibility'].forEach(k=>content.style.removeProperty(k));}if(action){action.disabled=false;const label=action.querySelector('.dhol-tap-label');if(label)label.textContent='TAP THE DHOL 5 TIMES';}if(progress)progress.textContent='0 / 5 taps';};
  const open=()=>{resetReveal();overlay.classList.remove('hidden');document.body.classList.add('reveal-open');};
  const close=()=>{overlay.classList.add('hidden');document.body.classList.remove('reveal-open');resetReveal();};
- const reveal=()=>{
-   revealed=true;
-   panel.classList.add('is-revealed');
-   if(content){
-     content.classList.add('is-revealed');
-     // Explicitly clear visual concealment, independent of CSS class/cache state.
-     content.style.filter='none';
-     content.style.opacity='1';
-     content.style.clipPath='none';
-     content.style.webkitClipPath='none';
-     content.style.visibility='visible';
-   }
-   panel.style.setProperty('--scratch-progress','100%');
-   progress.textContent='Revealed ✨';
-   action.textContent='INVITATION REVEALED';
-   action.disabled=true;
- };
- btn.addEventListener('click',open);
- overlay.querySelector('[data-close-reveal]').addEventListener('click',close);
- overlay.addEventListener('click',e=>{if(e.target===overlay)close()});
+ const reveal=()=>{if(revealed)return;revealed=true;panel.classList.add('is-revealed');if(content){content.classList.add('is-revealed');content.style.filter='none';content.style.opacity='1';content.style.clipPath='none';content.style.webkitClipPath='none';content.style.visibility='visible';}panel.style.setProperty('--scratch-progress','100%');if(progress)progress.textContent='Revealed ✨';if(action){action.textContent='INVITATION REVEALED';action.disabled=true;}};
+ btn.addEventListener('click',open);overlay.querySelector('[data-close-reveal]').addEventListener('click',close);overlay.addEventListener('click',e=>{if(e.target===overlay)close()});
  if(method==='dhol'){
-   action.addEventListener('click',()=>{
-     if(revealed)return;
-     taps=Math.min(5,taps+1);
-     progress.textContent=`${taps} / 5 taps`;
-     const tapLabel=action.querySelector('.dhol-tap-label');if(tapLabel)tapLabel.textContent=taps<5?`TAP THE DHOL (${taps}/5)`:'REVEALING…';
-     panel.classList.add('drum-hit');
-     setTimeout(()=>panel.classList.remove('drum-hit'),130);
-     if(taps===5){
-       // Reveal first so sound playback can never block the invitation.
-       reveal();
-       if(cfg.dholSoundUrl){
-         try { const a=new Audio(cfg.dholSoundUrl); const result=a.play(); if(result&&result.catch)result.catch(()=>{}); } catch(_) {}
-       } else {
-         try {
-           const AudioContextClass=window.AudioContext||window.webkitAudioContext;
-           if(AudioContextClass){
-             const context=new AudioContextClass();
-             [0,130,260,390,520].forEach((delay,n)=>{
-               const oscillator=context.createOscillator(),gain=context.createGain(),when=context.currentTime+delay/1000;
-               oscillator.type='sine'; oscillator.frequency.setValueAtTime(n%2?95:70,when);
-               gain.gain.setValueAtTime(0.0001,when); gain.gain.exponentialRampToValueAtTime(0.25,when+0.01); gain.gain.exponentialRampToValueAtTime(0.0001,when+0.13);
-               oscillator.connect(gain); gain.connect(context.destination); oscillator.start(when); oscillator.stop(when+0.14);
-             });
-             setTimeout(()=>{try{context.close()}catch(_){}},1100);
-           }
-         } catch(_) {}
-       }
-     }
-   });
+   action.addEventListener('click',()=>{if(revealed)return;taps=Math.min(5,taps+1);progress.textContent=`${taps} / 5 taps`;const label=action.querySelector('.dhol-tap-label');if(label)label.textContent=taps<5?`TAP THE DHOL (${taps}/5)`:'REVEALING…';panel.classList.add('drum-hit');setTimeout(()=>panel.classList.remove('drum-hit'),130);if(taps===5){reveal();if(cfg.dholSoundUrl){try{const a=new Audio(cfg.dholSoundUrl);const result=a.play();if(result&&result.catch)result.catch(()=>{});}catch(_){}}else{try{const AC=window.AudioContext||window.webkitAudioContext;if(AC){const c=new AC();[0,130,260,390,520].forEach((delay,n)=>{const o=c.createOscillator(),g=c.createGain(),t=c.currentTime+delay/1000;o.type='sine';o.frequency.setValueAtTime(n%2?95:70,t);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.25,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+.13);o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+.14);});setTimeout(()=>{try{c.close()}catch(_){}},1100);}}catch(_){}}}});
  }else{
-   let scratching=false;
-   const scratchStart=e=>{if(revealed)return;scratching=true;startX=e.clientX;startY=e.clientY;moved=0;try{panel.setPointerCapture(e.pointerId)}catch(_){}};
-   const scratchMove=e=>{if(!scratching||revealed)return;moved+=Math.abs(e.clientX-startX)+Math.abs(e.clientY-startY);startX=e.clientX;startY=e.clientY;panel.style.setProperty('--scratch-progress',Math.min(100,Math.round(moved/4))+'%');if(moved>(method==='heart'?120:160))reveal();};
-   const scratchEnd=()=>{scratching=false};
-   panel.addEventListener('pointerdown',scratchStart);panel.addEventListener('pointermove',scratchMove);panel.addEventListener('pointerup',scratchEnd);panel.addEventListener('pointercancel',scratchEnd);
-   action.addEventListener('click',()=>{if(method==='heart'){panel.classList.add('heart-tracing');setTimeout(reveal,450)}else reveal()});
+   const isHeart=method==='heart';
+   const start=e=>{if(revealed)return;scratching=true;startX=e.clientX;startY=e.clientY;moved=0;try{panel.setPointerCapture(e.pointerId)}catch(_){};};
+   const move=e=>{if(!scratching||revealed)return;const dx=e.clientX-startX,dy=e.clientY-startY;moved+=Math.abs(dx)+Math.abs(dy);startX=e.clientX;startY=e.clientY;panel.style.setProperty('--scratch-progress',Math.min(100,Math.round(moved/(isHeart?5:4)))+'%');if(isHeart){panel.classList.add('heart-tracing');/* require a deliberate trace-sized gesture over the large heart */if(moved>420)reveal();}else if(moved>160)reveal();};
+   const stop=()=>{scratching=false;};panel.addEventListener('pointerdown',start);panel.addEventListener('pointermove',move);panel.addEventListener('pointerup',stop);panel.addEventListener('pointercancel',stop);
  }
 });
 }
-
 function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function mapUrl(v){return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(v||cfg.venue||'Wedding venue')}
 function calendarUrl(e){let start=(e.date||cfg.date||'2026-01-01').replaceAll('-','')+'T'+(e.start||'10:00').replace(':','')+'00';let end=(e.date||cfg.date||'2026-01-01').replaceAll('-','')+'T'+(e.end||e.start||'11:00').replace(':','')+'00';let title=encodeURIComponent(e.name+' — '+cfg.bride+' & '+cfg.groom),details=encodeURIComponent(e.description||'Wedding celebration');return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&details=${details}&location=${encodeURIComponent(e.venue||cfg.venue)}`}
