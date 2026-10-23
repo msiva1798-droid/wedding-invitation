@@ -1,73 +1,41 @@
-# Wedding Invitation Website (GitHub Pages)
+# Ananya & Rohan — Wedding Invitation (GitHub Pages)
 
-A responsive Indian wedding invitation starter inspired by the reference screenshots. Includes event toggles, countdown, team selection, directions, calendar links, optional music, WhatsApp RSVP fallback, a three-tap creator panel, config import/export, and local CSV export.
+This is a single-file wedding invitation: **all HTML, styling, interactions, Creator Tools, and the default wedding settings are inside `index.html`**. It is designed to be uploaded once to a GitHub repository and then edited from the secret Creator Tools panel on your phone.
 
-## Publish on GitHub Pages
+## One-time publishing
 
-1. Create a new repository on GitHub, e.g. `wedding-invitation`.
-2. Upload **all files in this folder** to the repository root (`index.html`, `style.css`, `script.js`, `wedding-config.json`, and this README).
-3. In the repository, open **Settings → Pages**.
-4. Under Build and deployment, choose **Deploy from a branch**.
-5. Select `main` and `/ (root)`, then Save.
-6. Wait for the Pages URL shown in Settings → Pages. Anyone with the link can open the invitation.
+1. Create a **public** GitHub repository (for example, `wedding-invitation`).
+2. Upload only `index.html` to the repository root and commit it.
+3. Open **Settings → Pages**. Choose **Deploy from a branch**, select `main` and `/(root)`, then save.
+4. Wait for GitHub to show the Pages URL. That is the stable invitation link to share with guests.
 
-For the public invitation to work, the published Pages site must be publicly accessible. `noindex` discourages search engines but does not make the URL private.
+## One-time editor authorization on your phone
 
-## Change wedding details
+The browser editor updates the existing `index.html` through GitHub's Contents API. You will not need to download or upload a new file for each change.
 
-- Open the site and tap the small ✦ at bottom-right **three times quickly**.
-- Demo PIN: `2468`.
-- Edit details and events, then click **Save in this browser**.
-- Under Records, choose **Download wedding-config.json**.
-- Upload/replace `wedding-config.json` in your GitHub repository and commit it to publish changes to all guests.
+1. In GitHub, open **Settings → Developer settings → Personal access tokens → Fine-grained tokens** and create a token restricted to **only this invitation repository**.
+2. Give it **Contents: Read and write** permission. Set an expiration date. Do not grant other permissions.
+3. Open the live invitation on the phone/browser you will use for editing.
+4. Tap the small star (✦) **five times quickly**, enter the Creator Tools PIN `2468`, and open the **Records** tab.
+5. Enter the GitHub owner/username, repository name, branch (`main`), token, and file path (`index.html`). Tap **Save & publish to GitHub**.
+6. For future edits on that same phone/browser, open Creator Tools, edit the details/events/style, then tap **Save & publish to GitHub**. The page URL stays the same; GitHub Pages may take a short time to deploy the update.
 
-You can also edit `wedding-config.json` directly in GitHub. Use valid JSON syntax. The event's `enabled` field controls whether it appears.
+## Important security notes
 
-## RSVP and data limitations (important)
+- The Creator Tools PIN is a convenience lock, **not real security**; frontend code is public and a determined visitor can inspect it.
+- The GitHub token is stored in that browser's local storage, not embedded in the public `index.html`. Anyone with access to that browser profile or scripts running on the page could potentially access it. Use a fine-grained token limited to this one repository, set an expiry, and revoke it in GitHub if the phone/browser is lost or you no longer need editing. Do not share the token.
+- If you use a shared/public device, do not save the token there. You can revoke the token in GitHub at any time.
+- Keep a backup of `index.html` before major changes.
 
-GitHub Pages serves static files; it cannot receive a form POST and write the response back to the repository. This starter therefore:
-- Opens WhatsApp with a prefilled RSVP message when a WhatsApp number is configured.
-- Saves a copy of a submitted RSVP in the current browser's local storage and allows a CSV export from that browser.
-- Does **not** automatically gather all guests' RSVPs into a shared list. WhatsApp replies are not automatically imported.
-- Tracks a first-time visit in that browser's local storage only. It is not a cross-device, server-wide unique visitor count.
-- Stores customisations locally until you export and commit the JSON file.
+## Features included
 
-If you need automatic central RSVP collection and cross-device visitor analytics, a server-side write endpoint or hosted form/database is required. Do not treat the demo PIN as secure: the frontend code is public and the PIN can be discovered. Do not store sensitive information in public files.
+- Elegant Indian wedding invitation with envelope intro, countdown, family message, event cards, closing section, and optional music.
+- Creator Tools for names, date, venue, family details, event visibility and details, dress-code toggles, reveal method per event (scratch/rub, heart trace, or dhol five-tap), style toggles, and RSVP settings.
+- Event details stay hidden until the interaction is completed. Heart mode uses a gesture to trace; scratch mode uses rubbing/scratching; dhol mode requires five taps.
+- WhatsApp RSVP fallback and local export tools.
 
-## Customize WhatsApp
+## Static-site limitations
 
-Edit the `whatsapp` value in `wedding-config.json` to your number in international format with digits only, including country code, e.g. `919876543210`. Replace all sample details before sharing.
-
-## Optional music
-
-Place an audio file you have permission to use in the repository (for example `assets/music.mp3`) and set `musicUrl` to `assets/music.mp3` in `wedding-config.json`. Browsers generally require a user click before audio can play.
-
-## Notes
-
-- `robots` noindex is only a request to search engines, not access control.
-- Do not commit secrets, private phone numbers, or private guest records into a public repository.
-- Keep backups of your exported RSVP CSV and config.
-
-
-### RSVP guest-count validation
-- Declining automatically sets the guest count to 0.
-- Accepting requires a whole-number guest count from 1 to 20.
-- This is client-side validation; static GitHub Pages still does not collect responses centrally.
-
-
-## Interactive features
-- Golden envelope opening screen, configurable in Creator Tools.
-- Tap/rub event keepsake cards that reveal event details.
-- Heart-shaped reveal message.
-- Tap the dhol five times to play a celebratory beat. Add an optional MP3 URL in Creator Tools for a real dhol/melam sound.
-
-
-## Per-event reveal and dress code
-In Creator Tools → Events, choose each event's reveal method (full scratch, heart-shaped scratch, or dhol five-tap). Each event also has a “Show dress code for this event” checkbox. Publish the exported `wedding-config.json` to make those settings visible to all guests.
-
-
-### Reveal interactions
-- Event preview cards say “TOUCH TO REVEAL” (heart events say “TOUCH THE HEART”).
-- Full scratch mode has no button: scratch/swipe the card itself; the only overlay instruction is “SCRATCH THE CARD TO REVEAL”.
-- Heart mode has no button: trace the large heart itself; “TRACE THE HEART” appears inside it and “Rub or scratch over the heart” remains below.
-- Dhol mode retains its tappable illustration and five-tap reveal.
+- Changes published through Creator Tools update the repository file and are shared with guests after GitHub Pages deploys.
+- RSVP replies are opened in WhatsApp and are **not collected into a central dashboard** by GitHub Pages. Local RSVP/visit records only exist in the browser that created them.
+- Public GitHub Pages content is public. Do not put private guest information or secrets in the invitation.
